@@ -1,2 +1,3 @@
-# sql-data-warehouse-project
-Develop a modern data warehouse using SQL, including ETL Process, data modelling, and analytics
+# Data Warehouse and Anlytics Project
+
+Welcome to the **Data Warehouse and Anlytics Project** repository!
