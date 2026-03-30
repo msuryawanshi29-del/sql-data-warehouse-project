@@ -1,3 +1,4 @@
+
 /*
 ===============================================================================
 DDL Script: Create Gold Views (PostgreSQL)
@@ -75,9 +76,9 @@ SELECT
     ci.cst_create_date AS create_date
 
 FROM silver.crm_cust_info ci
-LEFT JOIN silver.erp_cust_az12 ca
+LEFT JOIN silver.erp_cust ca
     ON ci.cst_key = ca.cid
-LEFT JOIN silver.erp_loc_a101 la
+LEFT JOIN silver.erp_loc la
     ON ci.cst_key = la.cid;
 
 
@@ -115,7 +116,7 @@ SELECT
     pn.prd_start_dt AS start_date
 
 FROM silver.crm_prd_info pn
-LEFT JOIN silver.erp_px_cat_g1v2 pc
+LEFT JOIN silver.erp_cat pc
     ON pn.cat_id = pc.id
 
 -- Only current/active products
@@ -163,7 +164,7 @@ SELECT
     sd.sls_quantity AS quantity,
     sd.sls_price    AS price
 
-FROM silver.crm_sales_details sd
+FROM silver.crm_sale_info sd
 LEFT JOIN gold.dim_products pr
     ON sd.sls_prd_key = pr.product_number
 LEFT JOIN gold.dim_customers cu
