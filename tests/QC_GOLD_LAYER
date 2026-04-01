@@ -1,0 +1,100 @@
+/*
+===============================================================================
+DATA QUALITY CHECKS – GOLD LAYER (PostgreSQL)
+===============================================================================
+
+🎯 Purpose:
+    This script validates the integrity, consistency, and correctness of the 
+    Gold Layer (Star Schema).
+
+    These checks ensure:
+    ✔ Surrogate keys are unique
+    ✔ Fact-to-dimension relationships are valid
+    ✔ No orphan records exist in fact table
+
+📌 Why Important:
+    - Prevents incorrect BI reports
+    - Ensures trust in analytics
+    - Detects ETL/data issues early
+
+⚠️ Expected Output:
+    - All queries should return ZERO rows
+    - Any result indicates a data issue that must be fixed
+
+===============================================================================
+*/
+
+
+-- =============================================================================
+-- 1. CHECK: Uniqueness of Customer Key
+-- =============================================================================
+/*
+Description:
+    Ensures that each customer_key is unique in dim_customers
+
+Expectation:
+    No duplicate customer_key values
+*/
+
+SELECT 
+    customer_key,
+    COUNT(*) AS duplicate_count
+FROM gold.dim_customers
+GROUP BY customer_key
+HAVING COUNT(*) > 1;
+
+
+
+-- =============================================================================
+-- 2. CHECK: Uniqueness of Product Key
+-- =============================================================================
+/*
+Description:
+    Ensures that each product_key is unique in dim_products
+
+Expectation:
+    No duplicate product_key values
+*/
+
+SELECT 
+    product_key,
+    COUNT(*) AS duplicate_count
+FROM gold.dim_products
+GROUP BY product_key
+HAVING COUNT(*) > 1;
+
+
+
+-- =============================================================================
+-- 3. CHECK: Referential Integrity (Fact → Dimensions)
+-- =============================================================================
+/*
+Description:
+    Ensures that every record in fact_sales has valid references to:
+    - dim_customers
+    - dim_products
+
+Business Rule:
+    - No orphan records should exist in fact table
+
+Expectation:
+    No records returned
+*/
+
+SELECT 
+    f.order_number,
+    f.customer_key,
+    f.product_key
+FROM gold.fact_sales f
+LEFT JOIN gold.dim_customers c
+    ON c.customer_key = f.customer_key
+LEFT JOIN gold.dim_products p
+    ON p.product_key = f.product_key
+WHERE c.customer_key IS NULL 
+   OR p.product_key IS NULL;
+
+
+
+-- =============================================================================
+-- ✅ END OF SCRIPT
+-- =============================================================================
